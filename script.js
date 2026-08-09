@@ -8,7 +8,7 @@ const encodeSrc = (value) => encodeURI(value);
 
 function renderVideoCards(list, targetId, label) {
   const target = document.getElementById(targetId);
-  target.innerHTML += list.map((item, index) => `<article class="video-card reveal ${item.cover ? "is-cover" : ""}" tabindex="0" data-type="video" data-src="${esc(item.src)}" data-title="${esc(item.title)}" data-meta="${label} · ${String(index + 1).padStart(2, "0")}"><div class="video-frame"><video data-autoplay muted loop playsinline preload="metadata"><source src="${encodeSrc(item.src)}" type="video/mp4"></video><span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-play">播放 ↗</span></div><div class="card-copy"><span>${item.cover ? "封面视频" : label}</span><h3>${esc(item.title)}</h3></div></article>`).join("");
+  target.innerHTML += list.map((item, index) => `<article class="video-card reveal ${item.cover ? "is-cover" : ""}" tabindex="0" data-type="video" data-src="${esc(item.src)}" data-title="${esc(item.title)}" data-meta="${label} · ${String(index + 1).padStart(2, "0")}"><div class="video-frame"><video data-autoplay muted loop playsinline preload="none"><source src="${encodeSrc(item.src)}" type="video/mp4"></video><span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-play">播放 ↗</span></div><div class="card-copy"><span>${item.cover ? "封面视频" : label}</span><h3>${esc(item.title)}</h3></div></article>`).join("");
 }
 
 renderVideoCards(media.aigc, "aigcGrid", "AIGC Motion");
