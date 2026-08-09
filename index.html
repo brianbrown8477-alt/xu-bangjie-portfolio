@@ -2,57 +2,82 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="徐邦杰｜动画设计、电商设计、AIGC 设计师作品集">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="徐邦杰的 AIGC、三维动画与电商设计作品集">
   <meta name="theme-color" content="#f4f5f8" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)">
   <title>徐邦杰 · 视觉设计作品集</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
-  <button class="mobile-nav-trigger glass-button" id="mobileNavTrigger" aria-label="打开导航" aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <button class="mobile-menu" id="mobileMenu" aria-label="打开导航" aria-expanded="false">☰</button>
   <aside class="sidebar" id="sidebar">
-    <a class="identity" href="#home" aria-label="返回首页"><span class="identity-mark">徐</span><span><strong>徐邦杰</strong><small>Visual Designer</small></span></a>
-    <nav class="sidebar-nav" aria-label="页面导航">
-      <a class="nav-link active" href="#home"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>首页</a>
-      <a class="nav-link" href="#motion"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m8 15 3-3 2 2 3-4 2 3"/></svg>动态作品</a>
-      <a class="nav-link" href="#ecommerce"><svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H10l2 2.5h5.5A2.5 2.5 0 0 1 20 10v8.5A2.5 2.5 0 0 1 17.5 21h-11A2.5 2.5 0 0 1 4 18.5z"/></svg>电商系列</a>
-      <a class="nav-link" href="#profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>个人优势</a>
-      <a class="nav-link" href="#experience"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V4h8v3M3 12h18"/></svg>工作经历</a>
-      <a class="nav-link" href="#contact"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m4 7 8 6 8-6"/></svg>联系我</a>
+    <a class="brand" href="#home"><span class="brand-mark">徐</span><span><b>徐邦杰</b><small>Visual Designer</small></span></a>
+    <nav aria-label="主要导航">
+      <a class="nav-link active" href="#home">首页</a>
+      <a class="nav-link" href="#aigc">AIGC</a>
+      <a class="nav-link" href="#threeD">三维动画</a>
+      <a class="nav-link" href="#ecommerce">电商设计</a>
+      <a class="nav-link" href="#profile">关于我</a>
+      <a class="nav-link" href="#contact">联系我</a>
     </nav>
-    <div class="sidebar-bottom"><button class="theme-switch" id="themeSwitch" aria-label="切换显示模式"><svg class="theme-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg><svg class="theme-moon" viewBox="0 0 24 24"><path d="M20.5 14.3A8 8 0 0 1 9.7 3.5 8.5 8.5 0 1 0 20.5 14.3Z"/></svg><span>显示模式</span><i><b></b></i></button><small>© 2026 Xu Bangjie</small></div>
-  </aside><div class="nav-scrim" id="navScrim"></div>
+    <div class="sidebar-foot"><button id="themeToggle" class="theme-toggle" type="button">◐ <span>显示模式</span></button><small>© 2026 Xu Bangjie</small></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
   <main>
     <section class="hero section" id="home">
       <div class="hero-copy reveal">
-        <span class="eyebrow"><i></i>成都 · 寻找新的设计机会</span><h1>让图像，在<br><em>运动中拥有记忆点。</em></h1>
-        <p>你好，我是徐邦杰。专注三维动画、电商视觉与 AIGC 内容设计，以完整的创作流程，把产品卖点转化为有质感、有传播力的画面。</p>
-        <div class="hero-actions"><a class="button primary" href="#motion">浏览作品 <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a><a class="button secondary" href="#contact">联系我</a></div>
-        <div class="hero-numbers"><div><b>5<span>年</span></b><small>视觉设计经验</small></div><div><b>3<span>类</span></b><small>核心设计方向</small></div><div><b>12<span>组</span></b><small>电商项目系列</small></div></div>
+        <span class="eyebrow"><i></i>成都 · 5 年视觉设计经验</span>
+        <h1>让图像，在<br><em>运动中拥有记忆点。</em></h1>
+        <p>你好，我是徐邦杰。专注三维动画、电商视觉与 AIGC 内容设计，将产品卖点转化为有质感、有传播力的画面。</p>
+        <div class="hero-actions"><a class="button primary" href="#aigc">浏览作品 <span>↗</span></a><a class="button secondary" href="#contact">联系我</a></div>
+        <div class="hero-stats"><div><b>5<span>年</span></b><small>视觉设计经验</small></div><div><b>3<span>类</span></b><small>核心设计方向</small></div><div><b>27<span>支</span></b><small>动态视频作品</small></div></div>
       </div>
-      <div class="hero-display reveal delay-1"><video data-autoplay muted loop playsinline preload="metadata" aria-label="三维动态作品预览"><source src="三维/成型.mp4" type="video/mp4"></video><div class="hero-shade"></div><div class="window-dots"><i></i><i></i><i></i></div><div class="hero-display-note glass-panel"><span class="cube-icon"><svg viewBox="0 0 24 24"><path d="m12 2 8.7 5v10L12 22l-8.7-5V7z"/><path d="m3.5 7 8.5 5 8.5-5M12 12v10"/></svg></span><span><small>FEATURED MOTION</small><b>三维形态实验</b></span></div><button class="video-sound glass-button" id="heroSound" aria-label="打开视频声音"><svg class="muted-icon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM17 9l4 6M21 9l-4 6"/></svg><svg class="sound-icon" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4zM15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg></button></div>
-    </section>
-    <section class="section motion-section" id="motion">
-      <header class="section-heading reveal"><div><span class="section-kicker">Motion & AIGC</span><h2>动态作品</h2></div><p>三维、动效与 AIGC 的交叉实验。手机端进入视口后会自动静音播放，点击可查看完整预览。</p></header>
-      <div class="motion-grid">
-        <article class="motion-card feature-card reveal" tabindex="0" role="button" data-type="video" data-src="三维/沙子logo (2).mp4" data-title="沙粒 Logo 动态实验" data-meta="3D Motion · Logo Animation"><div class="media-shell"><video data-autoplay muted loop playsinline preload="metadata"><source src="三维/沙子logo (2).mp4" type="video/mp4"></video><span class="media-tag">01 · 3D</span><span class="play-pill"><svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5z"/></svg></span></div><div class="motion-info"><span>3D Motion</span><h3>沙粒 Logo 动态实验</h3><p>形态演变 · 材质光影 · 品牌动态</p></div></article>
-        <article class="motion-card reveal delay-1" tabindex="0" role="button" data-type="video" data-src="动效/1.mp4" data-title="短视频动态设计" data-meta="Motion Design · Social Content"><div class="media-shell"><video data-autoplay muted loop playsinline preload="metadata"><source src="动效/1.mp4" type="video/mp4"></video><span class="media-tag">02 · MOTION</span><span class="play-pill"><svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5z"/></svg></span></div><div class="motion-info"><span>Motion Design</span><h3>短视频动态设计</h3><p>节奏设计 · 信息表达</p></div></article>
-        <article class="motion-card reveal" tabindex="0" role="button" data-type="video" data-src="动效/2.mp4" data-title="品牌动态图形" data-meta="Motion Design · Visual Rhythm"><div class="media-shell"><video data-autoplay muted loop playsinline preload="metadata"><source src="动效/2.mp4" type="video/mp4"></video><span class="media-tag">03 · MOTION</span><span class="play-pill"><svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5z"/></svg></span></div><div class="motion-info"><span>Visual Rhythm</span><h3>品牌动态图形</h3><p>镜头节奏 · 视觉叙事</p></div></article>
-        <article class="motion-card image-card reveal delay-1" tabindex="0" role="button" data-type="image" data-src="创维IP/桌面.jpg" data-title="创维 IP 视觉系列" data-meta="IP Design · Character Visual"><div class="media-shell"><img src="创维IP/桌面.jpg" alt="创维 IP 视觉作品" loading="lazy"><span class="media-tag">04 · IP</span><span class="play-pill"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></span></div><div class="motion-info"><span>IP Design</span><h3>创维 IP 视觉系列</h3><p>形象延展 · 场景搭建</p></div></article>
+      <div class="hero-media reveal delay-1">
+        <video class="cover-video" data-autoplay autoplay muted loop playsinline preload="metadata" aria-label="封面视频"><source src="media/threeD/01.mp4" type="video/mp4"></video>
+        <div class="media-overlay"></div><span class="cover-label">封面 · 三维动画</span>
+        <button class="sound-button" id="soundButton" aria-label="切换声音">⌁</button>
       </div>
     </section>
-    <section class="section ecommerce-section" id="ecommerce"><header class="section-heading reveal"><div><span class="section-kicker">E-commerce Series</span><h2>电商系列作品</h2></div><p>每一叠文件夹代表一组完整的产品视觉项目。点击卡片展开，即可查看该项目的系列详情图。</p></header><div class="folder-tip reveal"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>点击任意文件夹，展开系列详情</span></div><div class="folder-grid" id="folderGrid"></div></section>
-    <section class="section profile-section" id="profile"><header class="section-heading reveal"><div><span class="section-kicker">Profile</span><h2>个人优势</h2></div></header><div class="profile-layout"><article class="statement-card glass-panel reveal"><span class="tiny-label">DESIGN VIEW</span><h3>“技术是基础，<br>审美决定作品的温度。”</h3><p>五年三维建模渲染与三年三维动画经验，让我能够从产品卖点出发，独立完成画面构思、建模、材质、灯光、动画和后期的完整流程。</p><span class="signature">Bangjie Xu</span></article><div class="profile-cards"><article class="profile-card glass-panel reveal delay-1"><span class="profile-icon"><svg viewBox="0 0 24 24"><path d="m12 2 8.7 5v10L12 22l-8.7-5V7z"/><path d="m3.5 7 8.5 5 8.5-5M12 12v10"/></svg></span><div><h3>三维与动态</h3><p>五年三维建模渲染经验，三年三维动画经验。</p></div></article><article class="profile-card glass-panel reveal delay-2"><span class="profile-icon"><svg viewBox="0 0 24 24"><path d="M4 19 9 4h2l-1 15M14 19l3-15h2l1 15M3 14h18"/></svg></span><div><h3>电商视觉</h3><p>产品图、详情页、活动主视觉与内容运营协作经验。</p></div></article><article class="profile-card glass-panel reveal delay-3"><span class="profile-icon"><svg viewBox="0 0 24 24"><path d="M12 3v3M5.6 5.6l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M12 18v3M16.3 16.3l2.1 2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="4"/></svg></span><div><h3>AIGC 内容制作</h3><p>熟练使用 AI 视频、AI 绘图工具，独立完成脚本、镜头与成片。</p></div></article></div></div><div class="skill-row reveal"><span>Photoshop</span><span>Illustrator</span><span>After Effects</span><span>Cinema 4D</span><span>Marvelous Designer</span><span>AI Video</span><span>AI Image</span></div></section>
-    <section class="section experience-section" id="experience"><header class="section-heading reveal"><div><span class="section-kicker">Experience</span><h2>工作经历</h2></div><p>求职意向：动画设计 · 电商设计 · AIGC 设计师<br>期望薪资：8–12K ｜ 期望城市：成都</p></header><div class="timeline glass-panel reveal">
-      <article class="timeline-item current"><div class="time"><b>2023.01</b><span>至今</span></div><div class="timeline-dot"></div><div class="timeline-copy"><div class="role-head"><div><h3>视频动态设计师</h3><p>峨眉山市渴望热望艺术创作中心</p></div><i>现在</i></div><ul><li>根据服装宣传需求完成三维模型构建，注重细节还原与结构准确性。</li><li>运用光影与材质调整优化渲染效果，突出服装质感与视觉表现力。</li><li>负责服装宣传动画制作，以动态展示产品特性，增强传播效果。</li><li>独立完成 AI 宣传短视频的脚本、画面生成、镜头优化与场景搭建，适配抖音、快手、视频号、小红书等平台。</li></ul><div class="role-tags"><span>C4D</span><span>MD</span><span>AE</span><span>AI Video</span></div></div></article>
-      <article class="timeline-item"><div class="time"><b>2022.04</b><span>2022.12</span></div><div class="timeline-dot"></div><div class="timeline-copy"><div class="role-head"><div><h3>电商设计师</h3><p>四川仕多德网络科技有限公司</p></div></div><ul><li>负责各大电商平台网店美工，运用 PS、AI、C4D 完成产品图设计、建模及详情页制作。</li><li>配合运营完成活动相关宣传配图与商品内容更新。</li></ul><div class="role-tags"><span>PS</span><span>AI</span><span>C4D</span><span>E-commerce</span></div></div></article>
-      <article class="timeline-item"><div class="time"><b>2021.10</b><span>2022.04</span></div><div class="timeline-dot"></div><div class="timeline-copy"><div class="role-head"><div><h3>视觉设计</h3><p>成都先胜信息科技有限公司</p></div></div><ul><li>根据物料需求设计海报、详情页和 Banner，完成多风格平面内容。</li><li>负责节日节点视觉更迭，持续维护品牌内容的一致性。</li></ul><div class="role-tags"><span>Visual Design</span><span>Banner</span><span>Campaign</span></div></div></article>
-      <article class="timeline-item education"><div class="time"><b>2018</b><span>2022</span></div><div class="timeline-dot"></div><div class="timeline-copy"><div class="role-head"><div><h3>艺术与科技 · 本科</h3><p>成都东软学院</p></div><i>教育</i></div></div></article>
-    </div></section>
-    <section class="section contact-section" id="contact"><div class="contact-card reveal"><div class="contact-glow"></div><span class="section-kicker">Let’s Create</span><h2>期待与你一起，<br>把想法做成好作品。</h2><p>目前正在成都寻找动画设计、电商设计或 AIGC 设计师机会。欢迎通过邮件或微信联系我。</p><div class="contact-actions"><a class="button primary" href="mailto:2364404229@qq.com">发送邮件 <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="m4 7 8 6 8-6"/></svg></a><button class="button secondary copy-button" data-copy="19950126972">复制微信号</button></div><div class="contact-meta"><span><small>WECHAT</small>19950126972</span><span><small>EMAIL</small>2364404229@qq.com</span><span><small>LOCATION</small>中国 · 成都</span></div></div></section>
+
+    <section class="section portfolio-section" id="aigc">
+      <div class="section-heading reveal"><div><span class="kicker">01 · GENERATIVE MOTION</span><h2>AIGC</h2></div><p>以 AI 视频与 AI 绘图为核心，完成脚本、画面生成、镜头优化与成片。</p></div>
+      <div class="video-grid" id="aigcGrid"></div>
+    </section>
+
+    <section class="section portfolio-section" id="threeD">
+      <div class="section-heading reveal"><div><span class="kicker">02 · 3D ANIMATION</span><h2>三维动画</h2></div><p>五年建模渲染经验，三年三维动画经验，关注结构、材质、光影与镜头节奏。</p></div>
+      <div class="threeD-intro glass-panel reveal"><div><b>超现实流动梦境</b><span>生成式动画的诗意实验</span></div><p>以 AIGC 生成式动画为创作核心，用三维镜头语言做空间校准，让金属、花海、城市与海底世界在一镜到底的穿梭中自然流变。</p></div>
+      <div class="video-grid" id="threeDGrid"></div>
+    </section>
+
+    <section class="section portfolio-section" id="ecommerce">
+      <div class="section-heading reveal"><div><span class="kicker">03 · E-COMMERCE VISUAL</span><h2>电商设计</h2></div><p>产品主图、详情页与活动视觉按文件夹系列叠放，点击卡片展开全部画面。</p></div>
+      <div class="folder-grid" id="ecommerceGrid"></div>
+    </section>
+
+    <section class="section profile-section" id="profile">
+      <div class="section-heading reveal"><div><span class="kicker">PROFILE</span><h2>关于我</h2></div></div>
+      <div class="profile-layout"><article class="statement glass-panel reveal"><span class="kicker">DESIGN VIEW</span><h3>技术是基础，<br>审美决定作品的温度。</h3><p>我擅长从产品卖点出发，独立完成建模、材质、灯光、动效、AI 画面生成与后期成片，并保持克制、清晰且有记忆点的视觉表达。</p><span class="signature">Bangjie Xu</span></article><div class="profile-cards"><article class="profile-card glass-panel reveal"><b>软件能力</b><p>Photoshop · Illustrator · After Effects · Cinema 4D · Marvelous Designer</p></article><article class="profile-card glass-panel reveal delay-1"><b>个人优势</b><p>独特审美与创意思维，熟练使用各类 AI 视频、AI 绘图工具。</p></article><article class="profile-card glass-panel reveal delay-2"><b>求职方向</b><p>动画设计 · 电商设计 · AIGC 设计师<br>期望薪资 8–12K · 成都</p></article></div></div>
+    </section>
+
+    <section class="section experience-section" id="experience">
+      <div class="section-heading reveal"><div><span class="kicker">EXPERIENCE</span><h2>工作经历</h2></div></div>
+      <div class="timeline glass-panel reveal">
+        <article><time>2023.01 — 至今</time><div><h3>视频动态设计师 · 峨眉山市渴望热望艺术创作中心</h3><p>负责服装三维建模、材质渲染、宣传动画与 AI 视频宣传，独立完成脚本、画面生成、镜头优化、场景搭建及平台适配。</p></div></article>
+        <article><time>2022.04 — 2022.12</time><div><h3>电商设计师 · 四川仕多德网络科技有限公司</h3><p>负责电商平台网店美工，完成产品图、三维建模、详情页与活动宣传配图。</p></div></article>
+        <article><time>2021.10 — 2022.04</time><div><h3>视觉设计 · 成都先胜信息科技有限公司</h3><p>根据物料需求设计海报、详情页、Banner 及节日主题平面内容。</p></div></article>
+        <article><time>2018 — 2022</time><div><h3>艺术与科技 · 本科 · 成都东软学院</h3><p>系统学习视觉设计、数字媒体与三维创作。</p></div></article>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contact"><div class="contact-card reveal"><span class="kicker">LET’S CREATE</span><h2>期待与你一起，<br>把想法做成好作品。</h2><p>目前正在成都寻找动画设计、电商设计或 AIGC 设计师机会。</p><div class="contact-actions"><a class="button primary" href="mailto:2364404229@qq.com">发送邮件 ↗</a><button class="button secondary copy-wechat" data-copy="19950126972">复制微信号</button></div><div class="contact-meta"><span><small>WECHAT</small>19950126972</span><span><small>EMAIL</small>2364404229@qq.com</span><span><small>LOCATION</small>中国 · 成都</span></div></div></section>
   </main>
-  <div class="viewer" id="viewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="作品预览"><div class="viewer-backdrop" data-close-viewer></div><div class="viewer-content"><header><div><span id="viewerMeta">作品预览</span><h3 id="viewerTitle"></h3></div><button class="viewer-close glass-button" data-close-viewer aria-label="关闭预览"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="viewer-media" id="viewerMedia"></div></div></div>
-  <div class="toast" id="toast">已复制微信号</div><script src="script.js"></script>
-</body></html>
+
+  <div class="viewer" id="viewer" aria-hidden="true"><div class="viewer-backdrop" data-close></div><div class="viewer-box"><button class="viewer-close" data-close aria-label="关闭">×</button><span id="viewerMeta"></span><h3 id="viewerTitle"></h3><div id="viewerMedia"></div></div></div>
+  <div class="toast" id="toast">已复制</div>
+  <script src="media/manifest.js"></script><script src="script.js"></script>
+</body>
+</html>
