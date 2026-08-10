@@ -8,7 +8,7 @@ const encodeSrc = (value) => encodeURI(value);
 
 function renderVideoCards(list, targetId, label) {
   const target = document.getElementById(targetId);
-  target.innerHTML += list.map((item, index) => `<article class="video-card reveal ${item.cover ? "is-cover" : ""}" tabindex="0" data-type="video" data-src="${esc(item.src)}" data-title="${esc(item.title)}" data-meta="${label} · ${String(index + 1).padStart(2, "0")}"><div class="video-frame"><video data-autoplay muted loop playsinline preload="none"><source src="${encodeSrc(item.src)}" type="video/mp4"></video><span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-play">播放 ↗</span></div><div class="card-copy"><span>${item.cover ? "封面视频" : label}</span><h3>${esc(item.title)}</h3></div></article>`).join("");
+  target.innerHTML += list.map((item, index) => `<article class="video-card reveal ${item.cover ? "is-cover" : ""}" tabindex="0" data-type="video" data-src="${esc(item.src)}" data-title="${esc(item.title)}" data-meta="${label} · ${String(index + 1).padStart(2, "0")}"><div class="video-frame"><video data-autoplay muted loop playsinline webkit-playsinline preload="metadata"><source src="${encodeSrc(item.src)}" type="video/mp4"></video><span class="card-index">${String(index + 1).padStart(2, "0")}</span><span class="card-play">播放 ↗</span><button class="inline-play" type="button" aria-label="播放视频">▶</button></div><div class="card-copy"><span>${item.cover ? "封面视频" : label}</span><h3>${esc(item.title)}</h3></div></article>`).join("");
 }
 
 renderVideoCards(media.aigc, "aigcGrid", "AIGC Motion");
@@ -49,8 +49,10 @@ document.addEventListener("click", (event) => {
 });
 document.addEventListener("keydown", (event) => { if ((event.key === "Enter" || event.key === " ") && document.activeElement?.matches(".video-card")) openViewer(document.activeElement.dataset); if (event.key === "Escape") closeViewer(); });
 
-const videoObserver = new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => { if (isIntersecting) { target.muted = true; target.defaultMuted = true; target.play().catch(() => target.closest(".video-frame")?.classList.add("needs-play")); } else target.pause(); }), { threshold: 0.2, rootMargin: "120px 0px" });
-document.querySelectorAll("video[data-autoplay]").forEach((video) => { video.autoplay = true; video.muted = true; video.defaultMuted = true; video.playsInline = true; video.setAttribute("autoplay", ""); video.setAttribute("muted", ""); video.setAttribute("playsinline", ""); videoObserver.observe(video); });
+const videoObserver = new IntersectionObserver((entries) => entries.forEach(({ target, isIntersecting }) => { if (isIntersecting) { target.muted = true; target.defaultMuted = true; target.setAttribute("muted", ""); target.load(); target.play().then(() => target.closest(".video-frame")?.classList.remove("needs-play")).catch(() => target.closest(".video-frame")?.classList.add("needs-play")); } else target.pause(); }), { threshold: 0.12, rootMargin: "180px 0px" });
+document.querySelectorAll("video[data-autoplay]").forEach((video) => { video.autoplay = true; video.muted = true; video.defaultMuted = true; video.playsInline = true; video.setAttribute("autoplay", ""); video.setAttribute("muted", ""); video.setAttribute("playsinline", ""); video.setAttribute("webkit-playsinline", ""); videoObserver.observe(video); });
+document.addEventListener("click", (event) => { const playButton = event.target.closest(".inline-play"); if (!playButton) return; event.stopPropagation(); const video = playButton.closest(".video-frame")?.querySelector("video"); if (!video) return; video.muted = true; video.play().then(() => video.closest(".video-frame")?.classList.remove("needs-play")).catch(() => {}); });
+addEventListener("touchstart", () => document.querySelectorAll("video[data-autoplay]").forEach((video) => { if (video.paused) video.play().catch(() => {}); }), { once: true, passive: true });
 
 const heroVideo = document.querySelector(".cover-video");
 document.getElementById("soundButton").addEventListener("click", () => { heroVideo.muted = !heroVideo.muted; heroVideo.play().catch(() => {}); });
