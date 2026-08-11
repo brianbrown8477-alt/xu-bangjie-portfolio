@@ -167,12 +167,22 @@ function setupViewer() {
 }
 
 function setupLazyVideos() {
+  const videos = $$('video[data-src]');
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const mobileOrConstrained = window.matchMedia('(max-width: 720px)').matches
+    || connection?.saveData
+    || /(^|-)2g$/.test(connection?.effectiveType || '');
+
+  // On phones, keep posters visible but wait for an explicit play tap before
+  // requesting the video bytes.
+  if (mobileOrConstrained) return;
+
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
     if (entry.isIntersecting && !video.src) { video.src = video.dataset.src; video.load(); }
     if (!entry.isIntersecting && !video.paused) video.pause();
-  }), { rootMargin: '280px 0px', threshold: .01 });
-  $$('video[data-src]').forEach(video => observer.observe(video));
+  }), { rootMargin: '120px 0px', threshold: .01 });
+  videos.forEach(video => observer.observe(video));
 }
 
 function setupTheme() {
@@ -217,10 +227,13 @@ async function init() {
   setupTheme(); setupViewer(); setupNav(); setupCopy();
   try {
     state.manifest = window.__PORTFOLIO_ASSETS__ || null;
-    try {
-      const response = await fetch('assets.json', { cache: 'no-store' });
-      if (response.ok) state.manifest = await response.json();
-    } catch (_) {}
+    // assets.js is loaded before app.js, so avoid a duplicate manifest request.
+    if (!state.manifest) {
+      try {
+        const response = await fetch('assets.json', { cache: 'force-cache' });
+        if (response.ok) state.manifest = await response.json();
+      } catch (_) {}
+    }
     if (!state.manifest) throw new Error('assets manifest unavailable');
     createHero(state.manifest.hero);
     renderVideos(state.manifest.aigc, $('#aigc-grid'), 0);

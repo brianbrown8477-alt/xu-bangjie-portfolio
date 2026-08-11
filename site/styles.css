@@ -184,6 +184,7 @@ footer a:hover { color: var(--text); }
 }
 
 @media (max-width: 620px) {
+  .portfolio-section, .profile-section { content-visibility: auto; contain-intrinsic-size: 900px; }
   .shell { width: calc(100% - 28px); }
   .topbar { top: 10px; width: calc(100% - 20px); min-height: 56px; border-radius: 19px; }.brand { font-size: 9px; }.brand-mark { width: 31px; height: 31px; }.topbar-actions { gap: 5px; }.topbar-actions .icon-button { width: 38px; height: 38px; border-radius: 12px; }
   .hero { padding-top: 79px; }.hero-media { min-height: 690px; border-radius: 26px; }
