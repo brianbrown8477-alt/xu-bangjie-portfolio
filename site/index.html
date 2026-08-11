@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="徐邦杰 2026 视觉作品集：AIGC、三维动画与电商设计。">
+  <meta name="theme-color" content="#07080b">
+  <title>徐邦杰 · 2026 视觉作品集</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2218%22 fill=%22%2307080b%22/><path d=%22M18 17l13 15-13 15M46 17L33 32l13 15%22 fill=%22none%22 stroke=%22%23a8ffea%22 stroke-width=%226%22 stroke-linecap=%22round%22/></svg>">
+  <link rel="stylesheet" href="styles.css">
+  <script src="assets.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+  <header class="topbar glass">
+    <a class="brand" href="#top" aria-label="返回顶部"><span class="brand-mark">XBJ</span><span>VISUAL / 2026</span></a>
+    <nav aria-label="作品集导航">
+      <a href="#aigc">AIGC</a><a href="#three-d">三维</a><a href="#shop">电商</a><a href="#brand-ip">创维 IP</a><a href="#profile">关于</a>
+    </nav>
+    <div class="topbar-actions"><button class="icon-button mobile-menu" id="mobile-menu" type="button" aria-label="展开导航" aria-expanded="false"><span>☰</span></button><button class="icon-button" id="theme-toggle" type="button" aria-label="切换明暗主题"><span>◐</span></button></div>
+  </header>
+
+  <main id="top">
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-media" id="hero-media">
+        <div class="hero-placeholder"></div>
+        <div class="hero-shade"></div>
+        <svg class="silhouette" viewBox="0 0 520 680" aria-hidden="true">
+          <defs>
+            <linearGradient id="neon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7effd7"/><stop offset=".34" stop-color="#5a7dff"/><stop offset=".68" stop-color="#dc43ff"/><stop offset="1" stop-color="#ff6f91"/></linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="11" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M257 64c-85 0-137 62-137 151 0 71 26 124 70 153-13 52-49 80-103 103-46 20-72 72-72 145h490c0-73-26-125-72-145-55-23-90-51-103-103 44-29 70-82 70-153 0-89-56-151-143-151Z" fill="#030407" stroke="url(#neon)" stroke-width="8" filter="url(#glow)"/>
+        </svg>
+        <div class="hero-copy">
+          <p class="eyebrow">XU BANGJIE · VISUAL DESIGNER</p>
+          <h1 id="hero-title"><strong>2026</strong><br><span>作品集</span></h1>
+          <p class="hero-intro">在三维、生成式影像与商业视觉之间，寻找一束具有温度的未来光。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#aigc">浏览作品 <span>↓</span></a>
+            <button class="button glass-button sound-toggle" type="button" data-sound-target="hero-video" aria-label="开启封面声音"><span class="sound-icon">⌁</span><span class="sound-label">开启声音</span></button>
+          </div>
+        </div>
+        <div class="hero-index"><span>PORTFOLIO</span><strong>01—26</strong></div>
+      </div>
+    </section>
+
+    <section class="intro-strip shell" aria-label="作品集概览">
+      <div><span>专注方向</span><strong>AIGC · 3D · E-COMMERCE</strong></div>
+      <div><span>经验</span><strong>5 YEARS</strong></div>
+      <div><span>所在地</span><strong>CHENGDU</strong></div>
+    </section>
+
+    <section class="portfolio-section shell" id="aigc">
+      <div class="section-heading"><div><p class="eyebrow">01 / GENERATIVE MOTION</p><h2><strong>AIGC</strong><em>生成影像</em></h2></div><p>让算法成为镜头语言的一部分。服装、人物与超现实场景，在动态叙事中形成新的视觉质感。</p></div>
+      <div class="video-collection" id="aigc-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="portfolio-section shell" id="three-d">
+      <div class="section-heading"><div><p class="eyebrow">02 / THREE DIMENSIONAL</p><h2><strong>三维</strong><em>动态设计</em></h2></div><p>从材质、结构到光影与运动，以准确的建模表达承载具有情绪的商业叙事。</p></div>
+      <div class="video-collection" id="three-d-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="portfolio-section shell" id="shop">
+      <div class="section-heading"><div><p class="eyebrow">03 / E-COMMERCE VISUAL</p><h2><strong>电商</strong><em>商业视觉</em></h2></div><p>每组作品自动轮播展示，鼠标悬停即可暂停并手动切换，点击画面查看作品细节。</p></div>
+      <div class="shop-grid" id="shop-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="portfolio-section brand-section shell" id="brand-ip">
+      <div class="section-heading"><div><p class="eyebrow">04 / BRAND CHARACTER DESIGN</p><h2><strong>创维 IP</strong><em>品牌形象</em></h2></div><p>以角色系统延展品牌的亲和力与识别度，在形象设定、场景应用与桌面视觉中建立完整叙事。</p></div>
+      <div class="brand-showcase glass" id="brand-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="profile-section shell" id="profile">
+      <div class="profile-card glass">
+        <div class="profile-lead">
+          <p class="eyebrow">ABOUT / XU BANGJIE</p>
+          <h2>用审美与技术，<br>让想象成为<strong>可见的作品。</strong></h2>
+          <p>五年三维建模渲染经验，三年三维动画经验。拥有独特的个人审美及创意思维，熟练掌握 PS、AI、AE、C4D、MD，并熟练使用各类 AI 视频与 AI 绘图工具。</p>
+          <div class="contact-actions"><a class="button primary" href="mailto:2364404229@qq.com">发送邮件</a><button class="button glass-button copy-wechat" type="button" data-copy="19950126972">复制微信</button></div>
+        </div>
+        <div class="profile-facts">
+          <dl><div><dt>姓名</dt><dd>徐邦杰 · 男 · 26岁</dd></div><div><dt>求职意向</dt><dd>动画设计 / 电商设计 / AIGC 设计师</dd></div><div><dt>期望</dt><dd>成都 · 8–12K</dd></div><div><dt>微信</dt><dd>19950126972</dd></div><div><dt>邮箱</dt><dd>2364404229@qq.com</dd></div></dl>
+        </div>
+      </div>
+
+      <div class="resume-grid">
+        <article class="resume-panel glass"><p class="eyebrow">EXPERIENCE</p><h3>工作经历</h3>
+          <div class="timeline">
+            <div><time>2023.01 — 至今</time><h4>峨眉山市渴望热望艺术创作中心</h4><p class="role">视频动态设计师</p><p>负责服装三维建模、材质灯光渲染、宣传动画及 AI 视频全流程制作；独立完成脚本、画面生成、镜头优化与场景搭建，适配抖音、快手、视频号、小红书等平台。</p></div>
+            <div><time>2022.04 — 2022.12</time><h4>四川仕多德网络科技有限公司</h4><p class="role">电商设计师</p><p>负责电商平台视觉设计，以 PS、AI、C4D 完成产品图、三维建模、详情页与运营活动宣传物料。</p></div>
+            <div><time>2021.10 — 2022.04</time><h4>成都先胜信息科技有限公司</h4><p class="role">视觉设计</p><p>完成海报、详情页、Banner 及多风格平面内容，并负责节日视觉的持续更新。</p></div>
+          </div>
+        </article>
+        <aside class="resume-side">
+          <article class="resume-panel glass"><p class="eyebrow">EDUCATION</p><h3>教育经历</h3><h4>成都东软学院</h4><p>本科 · 艺术与科技</p><time>2018 — 2022</time></article>
+          <article class="resume-panel glass"><p class="eyebrow">TOOLBOX</p><h3>专业能力</h3><div class="tags"><span>Photoshop</span><span>Illustrator</span><span>After Effects</span><span>Cinema 4D</span><span>Marvelous Designer</span><span>AI Video</span><span>AI Image</span></div></article>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell"><span>© 2026 XU BANGJIE</span><a href="#top">回到顶部 ↑</a></footer>
+
+  <dialog class="viewer" id="image-viewer">
+    <button class="viewer-close icon-button" type="button" aria-label="关闭图片查看">×</button>
+    <button class="viewer-prev viewer-arrow" type="button" aria-label="上一张">‹</button>
+    <figure><img alt=""><figcaption></figcaption></figure>
+    <button class="viewer-next viewer-arrow" type="button" aria-label="下一张">›</button>
+    <div class="viewer-count"></div>
+  </dialog>
+  <div class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
