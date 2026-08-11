@@ -181,7 +181,7 @@ function setupLazyVideos() {
     const video = entry.target;
     if (entry.isIntersecting && !video.src) { video.src = video.dataset.src; video.load(); }
     if (!entry.isIntersecting && !video.paused) video.pause();
-  }), { rootMargin: '120px 0px', threshold: .01 });
+  }), { rootMargin: '280px 0px', threshold: .01 });
   videos.forEach(video => observer.observe(video));
 }
 
@@ -227,10 +227,15 @@ async function init() {
   setupTheme(); setupViewer(); setupNav(); setupCopy();
   try {
     state.manifest = window.__PORTFOLIO_ASSETS__ || null;
-    // assets.js is loaded before app.js, so avoid a duplicate manifest request.
-    if (!state.manifest) {
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const mobileOrConstrained = window.matchMedia('(max-width: 720px)').matches
+      || connection?.saveData
+      || /(^|-)2g$/.test(connection?.effectiveType || '');
+    // Keep the existing desktop request path. Phones rely on the already-loaded
+    // assets.js manifest unless the fallback is needed.
+    if (!mobileOrConstrained || !state.manifest) {
       try {
-        const response = await fetch('assets.json', { cache: 'force-cache' });
+        const response = await fetch('assets.json', { cache: mobileOrConstrained ? 'force-cache' : 'no-store' });
         if (response.ok) state.manifest = await response.json();
       } catch (_) {}
     }
