@@ -30,6 +30,10 @@ function bindSoundButton(button) {
     event.stopPropagation();
     const video = document.getElementById(button.dataset.soundTarget);
     if (!video) return;
+    if (!video.getAttribute('src') && video.dataset.src) {
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.load();
+    }
     const enable = video.muted;
     if (enable) silenceOthers(video);
     video.muted = !enable;
@@ -77,7 +81,7 @@ function createVideoCard(item, index) {
   const frame = $('.video-frame', article);
   const play = $('.play-control', article);
   const ensureVideoLoaded = () => {
-    if (!video.src && video.dataset.src) {
+    if (!video.getAttribute('src') && video.dataset.src) {
       video.src = video.dataset.src;
       video.load();
     }
@@ -179,7 +183,10 @@ function setupLazyVideos() {
 
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
-    if (entry.isIntersecting && !video.src) { video.src = video.dataset.src; video.load(); }
+    if (entry.isIntersecting && !video.getAttribute('src')) {
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.load();
+    }
     if (!entry.isIntersecting && !video.paused) video.pause();
   }), { rootMargin: '280px 0px', threshold: .01 });
   videos.forEach(video => observer.observe(video));
@@ -254,23 +261,85 @@ async function init() {
 
 /* Revised media presentation: the cover is an explicit right-hand video card,
    work videos autoplay on pointer hover, and shop images open into a tidy grid. */
+function useMobileMedia() {
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  return window.matchMedia('(max-width: 720px)').matches
+    || connection?.saveData
+    || /(^|-)2g$/.test(connection?.effectiveType || '');
+}
+
+function mobileMediaPath(path) {
+  return path?.replace(/^media\//, 'media/mobile/');
+}
+
+function attachVideoControls(container, video) {
+  const play = $('.play-control', container);
+  const fullscreen = $('.fullscreen-control', container);
+  const frame = container.classList.contains('video-frame') ? container : $('.video-frame', container) || container;
+  const ensureLoaded = () => {
+    if (!video.getAttribute('src')) {
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.load();
+    }
+  };
+  const syncPlayState = () => {
+    if (!play) return;
+    play.textContent = video.paused ? '▶' : 'Ⅱ';
+    frame.classList.toggle('is-playing', !video.paused);
+  };
+  const pauseOthers = () => $$('video').forEach(other => { if (other !== video) other.pause(); });
+  const togglePlayback = async event => {
+    event?.stopPropagation();
+    ensureLoaded();
+    if (video.paused) {
+      pauseOthers();
+      try { await video.play(); } catch (_) {}
+    } else video.pause();
+    syncPlayState();
+  };
+  play?.addEventListener('click', togglePlayback);
+  video.addEventListener('play', syncPlayState);
+  video.addEventListener('pause', syncPlayState);
+  if (!useMobileMedia() && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    frame.addEventListener('mouseenter', async () => { ensureLoaded(); pauseOthers(); try { await video.play(); } catch (_) {} });
+    frame.addEventListener('mouseleave', () => video.pause());
+  }
+  fullscreen?.addEventListener('click', async event => {
+    event.stopPropagation(); ensureLoaded();
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else if (video.requestFullscreen) await video.requestFullscreen();
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    } catch (_) {}
+  });
+  const sound = $('.sound-control', container);
+  if (sound) bindSoundButton(sound);
+}
+
 function createHero(item) {
   if (!item) return;
   const video = document.createElement('video');
   video.id = 'hero-video';
   video.className = 'hero-cover-video';
-  video.src = item.src;
-  video.poster = item.poster;
-  video.autoplay = true;
+  video.preload = 'none';
+  video.dataset.src = item.src;
+  video.dataset.mobileSrc = mobileMediaPath(item.src);
+  video.poster = useMobileMedia() ? mobileMediaPath(item.poster) : item.poster;
   video.loop = true;
   video.muted = true;
   video.playsInline = true;
   video.setAttribute('aria-label', '2026 作品集封面视频');
   const coverCard = document.createElement('div');
   coverCard.className = 'hero-cover-card glass';
-  coverCard.append(video);
+  coverCard.innerHTML = `
+    ${item.audio ? '<button class="round-control sound-control video-sound-control" type="button" data-sound-target="hero-video" aria-label="开启声音"><span class="sound-icon">⌁</span><span class="sound-label">开启声音</span></button>' : ''}
+    <div class="video-controls hero-video-controls">
+      <button class="round-control play-control" type="button" aria-label="播放封面视频">▶</button>
+      <button class="round-control fullscreen-control" type="button" aria-label="全屏播放封面视频">⛶</button>
+    </div>`;
+  coverCard.prepend(video);
   $('#hero-media').append(coverCard);
-  bindSoundButton($('.sound-toggle'));
+  attachVideoControls(coverCard, video);
 }
 
 function createVideoCard(item, index) {
@@ -279,10 +348,10 @@ function createVideoCard(item, index) {
   const id = `work-video-${index}`;
   article.innerHTML = `
     <div class="video-frame">
-      <video id="${id}" preload="none" muted loop playsinline poster="${item.poster}" data-src="${item.src}" aria-label="${item.title}"></video>
+      <video id="${id}" preload="none" muted loop playsinline poster="${useMobileMedia() ? mobileMediaPath(item.poster) : item.poster}" data-src="${item.src}" data-mobile-src="${mobileMediaPath(item.src)}" aria-label="${item.title}"></video>
+      ${item.audio ? `<button class="round-control sound-control video-sound-control" type="button" data-sound-target="${id}" aria-label="开启声音"><span class="sound-icon">⌁</span><span class="sound-label">开启声音</span></button>` : ''}
       <div class="video-controls">
         <button class="round-control play-control" type="button" aria-label="播放 ${item.title}">▶</button>
-        ${item.audio ? `<button class="round-control sound-control" type="button" data-sound-target="${id}" aria-label="开启声音"><span class="sound-icon">⌁</span><span class="sound-label">开启声音</span></button>` : '<span></span>'}
         <button class="round-control fullscreen-control" type="button" aria-label="全屏播放 ${item.title}">⛶</button>
       </div>
     </div>
@@ -291,7 +360,10 @@ function createVideoCard(item, index) {
   const frame = $('.video-frame', article);
   const play = $('.play-control', article);
   const ensureLoaded = () => {
-    if (!video.src && video.dataset.src) { video.src = video.dataset.src; video.load(); }
+    if (!video.getAttribute('src') && video.dataset.src) {
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.load();
+    }
   };
   const pauseOthers = () => $$('video').forEach(other => { if (other !== video) other.pause(); });
   const playVideo = async () => {
@@ -366,27 +438,7 @@ function createVideoCard(item, index) {
     </div>
     <div class="video-meta"><div><h3>${item.title}</h3><p>${item.type}</p></div><time>${formatDuration(item.duration)}</time></div>`;
   const video = $('video', article);
-  const frame = $('.video-frame', article);
-  const play = $('.play-control', article);
-  const ensureLoaded = () => {
-    if (!video.src && video.dataset.src) { video.src = video.dataset.src; video.load(); }
-  };
-  const pauseOthers = () => $$('video').forEach(other => { if (other !== video) other.pause(); });
-  const playVideo = async () => { ensureLoaded(); pauseOthers(); try { await video.play(); play.textContent = 'Ⅱ'; frame.classList.add('is-playing'); } catch (_) {} };
-  const pauseVideo = () => { video.pause(); play.textContent = '▶'; frame.classList.remove('is-playing'); };
-  play.addEventListener('click', async event => { event.stopPropagation(); if (video.paused) await playVideo(); else pauseVideo(); });
-  frame.addEventListener('mouseenter', playVideo);
-  frame.addEventListener('mouseleave', pauseVideo);
-  $('.fullscreen-control', article).addEventListener('click', async event => {
-    event.stopPropagation(); ensureLoaded();
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else if (video.requestFullscreen) await video.requestFullscreen();
-      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
-    } catch (_) {}
-  });
-  const sound = $('.sound-control', article);
-  if (sound) bindSoundButton(sound);
+  attachVideoControls($('.video-frame', article), video);
   return article;
 }
 
@@ -396,7 +448,7 @@ function renderVideos(items, target, offset) {
     const groupItems = items.filter(item => (item.orientation || 'landscape') === orientation);
     if (!groupItems.length) return;
     const group = document.createElement('section');
-    group.className = 'video-subsection';
+    group.className = `video-subsection ${orientation}-group`;
     group.innerHTML = `<div class="video-subheading"><strong>${label}</strong><span>${meta} · ${groupItems.length.toString().padStart(2, '0')} WORKS</span></div><div class="video-grid"></div>`;
     const grid = $('.video-grid', group);
     groupItems.forEach((item, index) => grid.append(createVideoCard(item, offset + index + (orientation === 'landscape' ? 50 : 0))));
@@ -411,10 +463,14 @@ function createShopCard(group, groupIndex) {
   article.tabIndex = 0;
   article.innerHTML = `<div class="shop-meta"><div><h3>${group.title}</h3><p>${group.type}</p></div><span class="shop-count">${group.images.length.toString().padStart(2, '0')} 张</span></div><div class="shop-carousel" role="region" aria-label="${group.title} 自动轮播"></div>`;
   const carousel = $('.shop-carousel', article);
+  const mobile = useMobileMedia();
   const slides = group.images.map((image, imageIndex) => {
     const img = document.createElement('img');
     img.className = `carousel-slide${imageIndex === 0 ? ' is-active' : ''}`;
-    img.src = image.src; img.alt = `${group.title} · ${image.title}`; img.loading = 'lazy'; img.decoding = 'async';
+    const source = mobile ? mobileMediaPath(image.src) : image.src;
+    if (!mobile || imageIndex === 0) img.src = source;
+    else img.dataset.src = source;
+    img.alt = `${group.title} · ${image.title}`; img.loading = 'lazy'; img.decoding = 'async';
     img.addEventListener('click', event => { event.stopPropagation(); openViewer(group, imageIndex); });
     carousel.append(img); return img;
   });
@@ -426,15 +482,20 @@ function createShopCard(group, groupIndex) {
   let active = 0; let timer;
   const setActive = next => {
     active = (next + slides.length) % slides.length;
+    if (!slides[active].src && slides[active].dataset.src) slides[active].src = slides[active].dataset.src;
     slides.forEach((slide, index) => slide.classList.toggle('is-active', index === active));
     $$('.carousel-dot', dots).forEach((dot, index) => dot.classList.toggle('is-active', index === active));
   };
   slides.forEach((_, index) => { const dot = document.createElement('button'); dot.className = `carousel-dot${index === 0 ? ' is-active' : ''}`; dot.type = 'button'; dot.setAttribute('aria-label', `查看第 ${index + 1} 张`); dot.addEventListener('click', event => { event.stopPropagation(); setActive(index); }); dots.append(dot); });
   $('.carousel-prev', controls).addEventListener('click', event => { event.stopPropagation(); setActive(active - 1); });
   $('.carousel-next', controls).addEventListener('click', event => { event.stopPropagation(); setActive(active + 1); });
-  const start = () => { clearInterval(timer); timer = setInterval(() => setActive(active + 1), 3600); };
+  const start = () => { clearInterval(timer); if (!mobile) timer = setInterval(() => setActive(active + 1), 3600); };
   const stop = () => clearInterval(timer);
-  article.addEventListener('mouseenter', stop); article.addEventListener('mouseleave', start); article.addEventListener('focusin', stop); article.addEventListener('focusout', start); start();
+  article.addEventListener('mouseenter', stop); article.addEventListener('mouseleave', start); article.addEventListener('focusin', stop); article.addEventListener('focusout', start);
+  let touchStartX = 0;
+  carousel.addEventListener('pointerdown', event => { touchStartX = event.clientX; }, { passive: true });
+  carousel.addEventListener('pointerup', event => { const delta = event.clientX - touchStartX; if (Math.abs(delta) > 34) setActive(active + (delta < 0 ? 1 : -1)); }, { passive: true });
+  start();
   return article;
 }
 
@@ -473,10 +534,31 @@ function renderBrand(images, target) {
     const tile = document.createElement('button');
     tile.type = 'button'; tile.className = `brand-tile brand-tile-${visualIndex}${visualIndex === 0 ? ' is-render' : ''}`;
     tile.setAttribute('role', 'listitem'); tile.setAttribute('aria-label', `查看创维 IP ${image.title}`);
-    tile.innerHTML = `<img src="${image.src}" alt="创维 IP · ${image.title}" loading="lazy"><span>${visualIndex === 0 ? 'SKYWORTH IP / 3D CHARACTER' : `CHARACTER STUDY 0${visualIndex}`}</span>`;
+    tile.innerHTML = `<img src="${useMobileMedia() ? mobileMediaPath(image.src) : image.src}" alt="创维 IP · ${image.title}" loading="lazy"><span>${visualIndex === 0 ? 'SKYWORTH IP / 3D CHARACTER' : `CHARACTER STUDY 0${visualIndex}`}</span>`;
     tile.addEventListener('click', () => openViewer({ title: '创维 IP 视觉', images }, image.index));
     collage.append(tile);
   });
+}
+
+/* Final video-card definition: mobile media selection, top-right sound control,
+   and compact reliable touch controls. */
+function createVideoCard(item, index) {
+  const article = document.createElement('article');
+  article.className = `video-card ${item.orientation || 'landscape'}`;
+  const id = `work-video-${index}`;
+  article.innerHTML = `
+    <div class="video-frame">
+      <video id="${id}" preload="none" muted loop playsinline poster="${useMobileMedia() ? mobileMediaPath(item.poster) : item.poster}" data-src="${item.src}" data-mobile-src="${mobileMediaPath(item.src)}" aria-label="${item.title}"></video>
+      ${item.audio ? `<button class="round-control sound-control video-sound-control" type="button" data-sound-target="${id}" aria-label="开启声音"><span class="sound-icon">⌁</span><span class="sound-label">开启声音</span></button>` : ''}
+      <div class="video-controls">
+        <button class="round-control play-control" type="button" aria-label="播放 ${item.title}">▶</button>
+        <button class="round-control fullscreen-control" type="button" aria-label="全屏播放 ${item.title}">⛶</button>
+      </div>
+    </div>
+    <div class="video-meta"><div><h3>${item.title}</h3><p>${item.type}</p></div><time>${formatDuration(item.duration)}</time></div>`;
+  const video = $('video', article);
+  attachVideoControls($('.video-frame', article), video);
+  return article;
 }
 
 init();

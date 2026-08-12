@@ -389,3 +389,31 @@ footer a:hover { color: var(--text); }
   .carousel-slide { border-radius: 13px; }
   .brand-showcase { height: 430px; }
 }
+
+/* Final mobile interaction controls. */
+.video-sound-control { position: absolute; z-index: 5; top: 10px; right: 10px; }
+.video-controls { justify-content: flex-start; gap: 8px; right: auto; }
+.hero-video-controls { left: 12px; right: auto; }
+.hero-cover-card .video-sound-control { top: 12px; right: 12px; }
+.round-control, .carousel-arrow, .carousel-dot { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+@media (max-width: 620px) {
+  .hero-copy { pointer-events: none; }
+  .hero-copy a, .hero-copy button { pointer-events: auto; }
+  .portrait-group .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .landscape-group .video-grid { grid-template-columns: 1fr; }
+  .landscape-group .video-card .video-meta { min-height: 44px; }
+  .round-control { min-width: 28px; width: 28px; height: 28px; padding: 0; border-radius: 9px; font-size: 11px; background: rgba(5,7,11,.34); border-color: rgba(255,255,255,.14); backdrop-filter: blur(10px); }
+  .round-control::after { content: ""; position: absolute; inset: -7px; }
+  .video-controls .round-control { position: relative; }
+  .video-sound-control { position: absolute; top: 7px; right: 7px; opacity: .72; }
+  .video-controls { left: 7px; bottom: 7px; gap: 6px; opacity: .72; }
+  .video-frame.is-playing .video-controls, .video-frame:focus-within .video-controls { opacity: .9; }
+  .hero-cover-card .video-sound-control { top: 8px; right: 8px; }
+  .hero-video-controls { left: 8px; bottom: 8px; }
+  .carousel-controls { left: 7px; right: 7px; bottom: 7px; opacity: .5; }
+  .carousel-arrow { width: 26px; height: 26px; border-radius: 8px; font-size: 15px; color: rgba(255,255,255,.82); background: rgba(4,6,10,.22); border-color: rgba(255,255,255,.12); backdrop-filter: blur(8px); }
+  .carousel-dots { opacity: .48; gap: 3px; }
+  .carousel-dot { width: 3px; height: 3px; }
+  .carousel-dot.is-active { width: 10px; }
+}
