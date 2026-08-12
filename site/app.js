@@ -172,14 +172,9 @@ function setupViewer() {
 
 function setupLazyVideos() {
   const videos = $$('video[data-src]');
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const mobileOrConstrained = window.matchMedia('(max-width: 720px)').matches
-    || connection?.saveData
-    || /(^|-)2g$/.test(connection?.effectiveType || '');
-
   // On phones, keep posters visible but wait for an explicit play tap before
   // requesting the video bytes.
-  if (mobileOrConstrained) return;
+  if (useMobileMedia()) return;
 
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
@@ -263,7 +258,10 @@ async function init() {
    work videos autoplay on pointer hover, and shop images open into a tidy grid. */
 function useMobileMedia() {
   const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  return window.matchMedia('(max-width: 720px)').matches
+  return new URLSearchParams(location.search).get('mobile') === '1'
+    || navigator.userAgentData?.mobile === true
+    || /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent)
+    || window.matchMedia('(max-width: 720px)').matches
     || connection?.saveData
     || /(^|-)2g$/.test(connection?.effectiveType || '');
 }
@@ -280,7 +278,9 @@ function attachVideoControls(container, video) {
     if (!video.getAttribute('src')) {
       video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
+      return true;
     }
+    return false;
   };
   const syncPlayState = () => {
     if (!play) return;
@@ -290,10 +290,31 @@ function attachVideoControls(container, video) {
   const pauseOthers = () => $$('video').forEach(other => { if (other !== video) other.pause(); });
   const togglePlayback = async event => {
     event?.stopPropagation();
-    ensureLoaded();
+    const startedLoading = ensureLoaded();
     if (video.paused) {
       pauseOthers();
-      try { await video.play(); } catch (_) {}
+      if (play) {
+        play.classList.add('is-loading');
+        play.textContent = '…';
+        play.disabled = true;
+      }
+      try {
+        await video.play();
+      } catch (_) {
+        if (startedLoading || video.readyState < 3) {
+          await new Promise(resolve => {
+            const done = () => resolve();
+            video.addEventListener('canplay', done, { once: true });
+            setTimeout(done, 5000);
+          });
+          try { await video.play(); } catch (_) {}
+        }
+      } finally {
+        if (play) {
+          play.classList.remove('is-loading');
+          play.disabled = false;
+        }
+      }
     } else video.pause();
     syncPlayState();
   };
@@ -559,6 +580,38 @@ function createVideoCard(item, index) {
   const video = $('video', article);
   attachVideoControls($('.video-frame', article), video);
   return article;
+}
+
+/* Final e-commerce presentation: native horizontal scrolling has better touch
+   response than overlay controls and keeps every image fully visible. */
+function createShopCard(group, groupIndex) {
+  const article = document.createElement('article');
+  article.className = 'shop-card shop-swipe-card';
+  const displayTitle = groupIndex === 0 ? 'NFC橙汁' : group.title;
+  article.innerHTML = `
+    <div class="shop-meta"><div><h3>${displayTitle}</h3><p>${group.type}</p></div><span class="shop-count">${group.images.length.toString().padStart(2, '0')} 张</span></div>
+    <div class="shop-swipe" role="region" aria-label="${displayTitle} 图片，左右滑动查看"></div>`;
+  const track = $('.shop-swipe', article);
+  const mobile = useMobileMedia();
+  group.images.forEach((image, imageIndex) => {
+    const figure = document.createElement('button');
+    figure.type = 'button';
+    figure.className = 'shop-swipe-slide';
+    figure.setAttribute('aria-label', `查看 ${displayTitle} 第 ${imageIndex + 1} 张图片`);
+    const img = document.createElement('img');
+    img.src = mobile ? mobileMediaPath(image.src) : image.src;
+    img.alt = `${displayTitle} · ${image.title}`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    figure.append(img);
+    figure.addEventListener('click', () => openViewer({ ...group, title: displayTitle }, imageIndex));
+    track.append(figure);
+  });
+  return article;
+}
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20260812-mobile10').catch(() => {}));
 }
 
 init();

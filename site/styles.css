@@ -71,7 +71,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero-placeholder { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-placeholder { background: radial-gradient(circle at 72% 34%, #642b7c 0, transparent 26%), radial-gradient(circle at 40% 70%, #123c54, transparent 30%), #07080b; }
 .hero-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(3,4,7,.92) 3%, rgba(3,4,7,.7) 40%, rgba(3,4,7,.16) 72%), linear-gradient(0deg, rgba(3,4,7,.7), transparent 50%); }
-.hero-cover-card { position: absolute; z-index: 2; top: 7%; right: 5%; width: min(45%, 545px); height: 86%; padding: 9px; border-radius: 30px; overflow: hidden; background: rgba(20,22,30,.48); border: 1px solid rgba(255,255,255,.2); box-shadow: 0 30px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.18); backdrop-filter: blur(22px) saturate(145%); }
+.hero-cover-card { position: absolute; z-index: 4; top: 7%; right: 5%; width: min(45%, 545px); height: 86%; padding: 9px; border-radius: 30px; overflow: hidden; background: rgba(20,22,30,.48); border: 1px solid rgba(255,255,255,.2); box-shadow: 0 30px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.18); backdrop-filter: blur(22px) saturate(145%); }
 .hero-cover-video { width: 100%; height: 100%; display: block; object-fit: cover; border-radius: 23px; background: #050608; }
 .hero-cover-card::after { content: "THREE-D / COVER.M4V"; position: absolute; left: 24px; bottom: 22px; padding: 8px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 10px; color: rgba(255,255,255,.75); background: rgba(0,0,0,.38); font-size: 9px; letter-spacing: .14em; backdrop-filter: blur(14px); }
 .silhouette { position: absolute; z-index: 1; right: 8%; bottom: -10%; height: 96%; width: auto; opacity: .48; mix-blend-mode: screen; filter: drop-shadow(0 0 35px rgba(202,78,255,.48)); animation: breathe 7s var(--ease) infinite alternate; }
@@ -396,6 +396,7 @@ footer a:hover { color: var(--text); }
 .hero-video-controls { left: 12px; right: auto; }
 .hero-cover-card .video-sound-control { top: 12px; right: 12px; }
 .round-control, .carousel-arrow, .carousel-dot { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.play-control.is-loading { cursor: wait; opacity: .78; }
 
 @media (max-width: 620px) {
   .hero-copy { pointer-events: none; }
@@ -416,4 +417,28 @@ footer a:hover { color: var(--text); }
   .carousel-dots { opacity: .48; gap: 3px; }
   .carousel-dot { width: 3px; height: 3px; }
   .carousel-dot.is-active { width: 10px; }
+}
+
+/* Final cover and mobile-title fixes. */
+.hero-cover-card::after { display: none !important; content: none !important; }
+@media (max-width: 620px) {
+  .hero h1 { display: block; line-height: .92; }
+  .hero h1 strong, .hero h1 span { display: block; margin: 0; }
+  .hero h1 span { margin-top: 8px; color: transparent; background: linear-gradient(100deg, var(--mint), var(--blue) 52%, var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-stroke: 0; text-shadow: none; letter-spacing: .03em; font-weight: 760; }
+}
+
+/* Native swipe e-commerce gallery. */
+.shop-swipe-card { aspect-ratio: auto; min-height: 0; }
+.shop-swipe { width: 100%; margin-top: 14px; display: flex; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x; border-radius: 18px; }
+.shop-swipe::-webkit-scrollbar { display: none; }
+.shop-swipe-slide { flex: 0 0 100%; aspect-ratio: 1 / 1; min-width: 0; padding: 8px; border: 0; border-radius: 18px; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always; background: rgba(255,255,255,.035); cursor: zoom-in; }
+.shop-swipe-slide img { width: 100%; height: 100%; display: block; object-fit: contain; object-position: center; border-radius: 12px; }
+.shop-swipe-card .shop-carousel, .shop-swipe-card .carousel-controls { display: none !important; }
+
+@media (max-width: 620px) {
+  .shop-swipe-card { padding: 10px; border-radius: 18px; }
+  .shop-grid { grid-template-columns: 1fr; gap: 14px; }
+  .shop-swipe { margin-top: 9px; gap: 8px; border-radius: 13px; }
+  .shop-swipe-slide { padding: 4px; border-radius: 13px; }
+  .shop-swipe-slide img { border-radius: 10px; }
 }
