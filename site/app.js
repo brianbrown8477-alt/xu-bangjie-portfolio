@@ -705,7 +705,7 @@ function createVideoCard(item, index) {
 
 function createShopCard(group, groupIndex) {
   const article = document.createElement('article');
-  article.className = 'shop-card shop-gallery-card';
+  article.className = 'shop-card shop-gallery-card shop-stack-card';
   const title = groupIndex === 0 ? '\u004e\u0046\u0043\u6a59\u6c41' : group.title;
   const total = group.images.length;
   article.innerHTML = `<div class="shop-meta"><div><h3>${title}</h3><p>${group.type}</p></div><div class="shop-dots" role="tablist" aria-label="Image position"></div></div><div class="shop-gallery" role="region" aria-label="${title}"><button class="shop-arrow shop-prev" type="button" aria-label="Previous image">‹</button><div class="shop-stage"><div class="shop-track"></div></div><button class="shop-arrow shop-next" type="button" aria-label="Next image">›</button></div>`;
@@ -724,6 +724,7 @@ function createShopCard(group, groupIndex) {
   });
   const setActive = next => {
     active = (next + total) % total;
+    article.classList.toggle('is-expanded', active !== 0 || article.classList.contains('is-expanded'));
     track.style.transform = `translate3d(${-active * 100}%, 0, 0)`;
     $$('.shop-dot', dots).forEach((dot, i) => dot.classList.toggle('is-active', i === active));
   };
@@ -745,8 +746,46 @@ function updateViewer() {
   $('.viewer-count', viewer).textContent = `${state.viewerIndex + 1} / ${state.viewerGroup.images.length}`;
 }
 
+/* Keep one consistent speaker glyph in both sound states. The muted state is
+   communicated by opacity instead of swapping to a different emoji shape. */
+function iconFor() { return '🔊'; }
+function syncSoundButton(button, video) {
+  button.classList.toggle('is-muted', video.muted);
+  const icon = $('.sound-icon', button);
+  if (icon) icon.textContent = iconFor(video);
+  button.setAttribute('aria-label', video.muted ? 'Enable sound' : 'Mute sound');
+}
+function silenceOthers(except) {
+  $$('video').forEach(video => { if (video !== except) video.muted = true; });
+  $$('.sound-control, .sound-toggle').forEach(button => {
+    const video = document.getElementById(button.dataset.soundTarget || '');
+    if (video && video !== except) syncSoundButton(button, video);
+  });
+}
+function bindSoundButton(button) {
+  const update = () => {
+    const video = document.getElementById(button.dataset.soundTarget || '');
+    if (video) syncSoundButton(button, video);
+  };
+  button.addEventListener('click', async event => {
+    event.stopPropagation();
+    const video = document.getElementById(button.dataset.soundTarget || '');
+    if (!video) return;
+    if (!video.getAttribute('src') && video.dataset.src) {
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.load();
+    }
+    const enable = video.muted;
+    if (enable) silenceOthers(video);
+    video.muted = !enable;
+    if (video.paused) { try { await video.play(); } catch (_) {} }
+    update();
+  });
+  update();
+}
+
  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20260814-controls13').catch(() => {}));
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20260815-controls14').catch(() => {}));
 }
 
 init();
