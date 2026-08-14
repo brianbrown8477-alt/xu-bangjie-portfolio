@@ -516,14 +516,6 @@ footer a:hover { color: var(--text); }
 .shop-track { width: 100%; height: 100%; display: flex; transform: translate3d(0,0,0); transition: transform .48s var(--ease); will-change: transform; }
 .shop-gallery-slide { flex: 0 0 100%; width: 100%; height: 100%; min-width: 0; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
 .shop-gallery-slide img { width: 100%; height: 100%; display: block; object-fit: contain; object-position: center; border-radius: 12px; }
-.shop-stack-card:not(.is-expanded) .shop-stage { padding: 0; }
-.shop-stack-card:not(.is-expanded) .shop-track { position: relative; display: block; transform: none !important; }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide { position: absolute; inset: 5% 8%; width: 84%; height: 90%; opacity: 0; pointer-events: none; border: 1px solid rgba(255,255,255,.12); border-radius: 14px; background: rgba(255,255,255,.045); box-shadow: 0 20px 38px rgba(0,0,0,.24); transition: transform .42s var(--ease), opacity .28s ease; }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide:nth-child(1) { z-index: 6; opacity: 1; pointer-events: auto; transform: translate3d(0,0,0) rotate(0); }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide:nth-child(2) { z-index: 5; opacity: .8; transform: translate3d(10px,7px,0) rotate(2deg); }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide:nth-child(3) { z-index: 4; opacity: .62; transform: translate3d(-10px,13px,0) rotate(-2.5deg); }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide:nth-child(4) { z-index: 3; opacity: .42; transform: translate3d(14px,19px,0) rotate(3.5deg); }
-.shop-stack-card:not(.is-expanded) .shop-gallery-slide:nth-child(n+5) { z-index: 2; opacity: 0; transform: translate3d(0,24px,0) scale(.96); }
 .shop-arrow { position: absolute; z-index: 3; top: 50%; translate: 0 -50%; width: 36px; height: 64px; padding: 0; border: 1px solid rgba(255,255,255,.11); color: rgba(255,255,255,.82); background: rgba(4,6,10,.18); backdrop-filter: blur(10px); cursor: pointer; font-size: 25px; opacity: .52; transition: opacity .2s ease, background .2s ease; touch-action: manipulation; }
 .shop-arrow:hover, .shop-arrow:focus-visible { opacity: .9; background: rgba(4,6,10,.38); }
 .shop-prev { left: 8px; border-radius: 12px; }
