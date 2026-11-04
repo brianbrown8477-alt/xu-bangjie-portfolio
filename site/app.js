@@ -276,6 +276,7 @@ function attachVideoControls(container, video) {
   const frame = container.classList.contains('video-frame') ? container : $('.video-frame', container) || container;
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
+      if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
       video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
       return true;
@@ -618,6 +619,7 @@ function attachVideoControls(container, video) {
   const fullscreen = $('.fullscreen-control', frame);
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
+      if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
       video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
@@ -680,9 +682,14 @@ function createHero(item) {
   const video = document.createElement('video');
   video.id = 'hero-video';
   video.className = 'hero-cover-video';
-  video.src = useMobileMedia() ? mobileMediaPath(item.src) : item.src;
-  video.poster = useMobileMedia() ? mobileMediaPath(item.poster) : item.poster;
-  video.preload = 'metadata'; video.autoplay = true; video.loop = true; video.muted = true; video.playsInline = true;
+  const mobile = useMobileMedia();
+  if (mobile) {
+    video.dataset.src = item.src;
+    video.dataset.mobileSrc = mobileMediaPath(item.src);
+  } else video.src = item.src;
+  if (mobile) video.poster = mobileMediaPath(item.poster);
+  else video.poster = item.poster;
+  video.preload = mobile ? 'none' : 'metadata'; video.autoplay = !mobile; video.loop = true; video.muted = true; video.playsInline = true;
   video.setAttribute('aria-label', '2026 portfolio cover video');
   const coverCard = document.createElement('div');
   coverCard.className = 'hero-cover-card glass';
@@ -690,8 +697,10 @@ function createHero(item) {
     ${item.audio ? '<button class="round-control sound-control video-sound-control" type="button" data-sound-target="hero-video" aria-label="Toggle sound"><span class="sound-icon">🔇</span><span class="sound-label">Sound</span></button>' : ''}
     <div class="video-controls hero-video-controls"><button class="round-control play-control" type="button" aria-label="Play cover video">▶</button><button class="round-control fullscreen-control" type="button" aria-label="Fullscreen">↗</button></div>`;
   coverCard.prepend(video); $('#hero-media').append(coverCard); attachVideoControls(coverCard, video);
-  const start = () => video.play().catch(() => {});
-  video.addEventListener('canplay', start, { once: true }); start();
+  if (!mobile) {
+    const start = () => video.play().catch(() => {});
+    video.addEventListener('canplay', start, { once: true }); start();
+  }
 }
 
 function createVideoCard(item, index) {
@@ -699,7 +708,12 @@ function createVideoCard(item, index) {
   article.className = `video-card ${item.orientation || 'landscape'}`;
   const id = `work-video-${index}`;
   article.innerHTML = `<div class="video-frame"><video id="${id}" preload="none" muted loop playsinline poster="${useMobileMedia() ? mobileMediaPath(item.poster) : item.poster}" data-src="${item.src}" data-mobile-src="${mobileMediaPath(item.src)}" aria-label="${item.title}"></video>${item.audio ? `<button class="round-control sound-control video-sound-control" type="button" data-sound-target="${id}" aria-label="Toggle sound"><span class="sound-icon">🔇</span><span class="sound-label">Sound</span></button>` : ''}<div class="video-controls"><button class="round-control play-control" type="button" aria-label="Play ${item.title}">▶</button><button class="round-control fullscreen-control" type="button" aria-label="Fullscreen">↗</button></div></div><div class="video-meta"><div><h3>${item.title}</h3><p>${item.type}</p></div><time>${formatDuration(item.duration)}</time></div>`;
-  attachVideoControls(article, $('video', article));
+  const video = $('video', article);
+  if (useMobileMedia()) {
+    video.dataset.poster = mobileMediaPath(item.poster);
+    video.removeAttribute('poster');
+  }
+  attachVideoControls(article, video);
   return article;
 }
 
@@ -717,7 +731,7 @@ function createShopCard(group, groupIndex) {
     slide.setAttribute('aria-label', `${title} image ${index + 1}`);
     const image = document.createElement('img');
     image.src = useMobileMedia() ? mobileMediaPath(item.src) : item.src;
-    image.alt = `${title} · ${item.title}`; image.loading = index < 2 ? 'eager' : 'lazy'; image.decoding = 'async';
+    image.alt = `${title} · ${item.title}`; image.loading = useMobileMedia() ? 'lazy' : index < 2 ? 'eager' : 'lazy'; image.decoding = 'async';
     slide.append(image); slide.addEventListener('click', () => openViewer({ ...group, title }, index)); track.append(slide);
     const dot = document.createElement('button'); dot.type = 'button'; dot.className = `shop-dot${index === 0 ? ' is-active' : ''}`; dot.setAttribute('aria-label', `Image ${index + 1}`);
     dot.addEventListener('click', event => { event.stopPropagation(); setActive(index); }); dots.append(dot);
@@ -783,8 +797,19 @@ function bindSoundButton(button) {
   update();
 }
 
+function setupLazyVideos() {
+  if (!useMobileMedia() || !('IntersectionObserver' in window)) return;
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const video = entry.target;
+    if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
+    observer.unobserve(video);
+  }), { rootMargin: '160px 0px', threshold: 0.01 });
+  $$('video[data-poster]').forEach(video => observer.observe(video));
+}
+
  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20260815-controls16').catch(() => {}));
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-mobile-lazy1').catch(() => {}));
 }
 
 init();
