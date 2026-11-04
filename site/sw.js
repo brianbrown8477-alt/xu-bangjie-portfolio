@@ -1,10 +1,10 @@
-const CACHE = 'xbj-portfolio-shell-v18';
+const CACHE = 'xbj-portfolio-shell-v19';
 const SHELL = [
   './',
   './index.html',
-  './styles.css?v=20261104-startup-hd',
-  './assets.js?v=20261104-startup-hd',
-  './app.js?v=20261104-startup-hd'
+  './styles.css?v=20261104-half1',
+  './assets.js?v=20261104-half1',
+  './app.js?v=20261104-half1'
 ];
 
 self.addEventListener('install', event => {

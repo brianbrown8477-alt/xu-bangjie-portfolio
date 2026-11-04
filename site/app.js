@@ -31,7 +31,7 @@ function bindSoundButton(button) {
     const video = document.getElementById(button.dataset.soundTarget);
     if (!video) return;
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     const enable = video.muted;
@@ -179,7 +179,7 @@ function setupLazyVideos() {
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
     if (entry.isIntersecting && !video.getAttribute('src')) {
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     if (!entry.isIntersecting && !video.paused) video.pause();
@@ -267,7 +267,8 @@ function useMobileMedia() {
 }
 
 function mobileMediaPath(path) {
-  return path?.replace(/^media\//, 'media/mobile/');
+  const mobile = path?.replace(/^media\//, 'media/mobile/');
+  return mobile?.endsWith('.mp4') ? `${mobile}?v=half1` : mobile;
 }
 
 function attachVideoControls(container, video) {
@@ -277,7 +278,7 @@ function attachVideoControls(container, video) {
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
       if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
       return true;
     }
@@ -383,7 +384,7 @@ function createVideoCard(item, index) {
   const play = $('.play-control', article);
   const ensureLoaded = () => {
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
   };
@@ -620,7 +621,7 @@ function attachVideoControls(container, video) {
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
       if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
   };
@@ -676,28 +677,6 @@ function attachVideoControls(container, video) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 4000);
   });
-  if (useMobileMedia() && video.dataset.src) {
-    const quality = document.createElement('button');
-    quality.type = 'button'; quality.className = 'round-control quality-control';
-    quality.textContent = '高清'; quality.setAttribute('aria-label', '切换到高清画质');
-    quality.setAttribute('aria-pressed', 'false');
-    quality.addEventListener('click', async event => {
-      event.stopPropagation();
-      const hd = video.dataset.quality !== 'hd';
-      const time = video.currentTime || 0;
-      releaseOtherVideos(video);
-      video.dataset.quality = hd ? 'hd' : 'smooth';
-      quality.textContent = hd ? '流畅' : '高清';
-      quality.setAttribute('aria-label', hd ? '切换到流畅画质' : '切换到高清画质');
-      quality.setAttribute('aria-pressed', String(hd));
-      video.preload = 'auto';
-      video.src = hd ? video.dataset.src : video.dataset.mobileSrc;
-      video.load();
-      video.addEventListener('loadedmetadata', () => { if (time < video.duration) video.currentTime = time; }, { once: true });
-      try { await video.play(); } catch (_) {}
-    });
-    frame.append(quality);
-  }
   fullscreen?.addEventListener('click', async event => {
     event.stopPropagation(); ensureLoaded();
     try {
@@ -823,7 +802,7 @@ function bindSoundButton(button) {
     releaseOtherVideos(video);
     video.preload = 'auto';
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     const enable = video.muted;
@@ -860,7 +839,7 @@ function setupLazyVideos() {
       if (!candidate || candidate.hasAttribute('src')) return;
       releaseOtherVideos(candidate);
       candidate.preload = 'metadata';
-      candidate.src = candidate.dataset.quality === 'hd' ? candidate.dataset.src : candidate.dataset.mobileSrc || candidate.dataset.src;
+      candidate.src = candidate.dataset.mobileSrc || candidate.dataset.src;
       candidate.load();
     }, 250);
   }, { threshold: 0.25 });
@@ -880,7 +859,7 @@ function releaseOtherVideos(except) {
 }
 
  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-startup-hd').catch(() => {}));
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-half1').catch(() => {}));
 }
 
 init();
