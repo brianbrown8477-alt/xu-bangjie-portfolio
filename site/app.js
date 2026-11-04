@@ -31,7 +31,7 @@ function bindSoundButton(button) {
     const video = document.getElementById(button.dataset.soundTarget);
     if (!video) return;
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     const enable = video.muted;
@@ -179,7 +179,7 @@ function setupLazyVideos() {
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
     if (entry.isIntersecting && !video.getAttribute('src')) {
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     if (!entry.isIntersecting && !video.paused) video.pause();
@@ -277,7 +277,7 @@ function attachVideoControls(container, video) {
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
       if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
       return true;
     }
@@ -383,7 +383,7 @@ function createVideoCard(item, index) {
   const play = $('.play-control', article);
   const ensureLoaded = () => {
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
   };
@@ -620,11 +620,11 @@ function attachVideoControls(container, video) {
   const ensureLoaded = () => {
     if (!video.getAttribute('src')) {
       if (video.dataset.poster && !video.poster) video.poster = video.dataset.poster;
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
   };
-  const pauseOthers = () => $$('video').forEach(other => { if (other !== video) other.pause(); });
+  const pauseOthers = () => releaseOtherVideos(video);
   let hasStarted = video.autoplay;
   let flashTimer;
   const flashControl = () => {
@@ -645,8 +645,9 @@ function attachVideoControls(container, video) {
   const toggle = async event => {
     event?.stopPropagation();
     if (video.paused) {
-      ensureLoaded();
       pauseOthers();
+      video.preload = 'auto';
+      ensureLoaded();
       hasStarted = true;
       play?.classList.add('is-loading');
       try { await video.play(); } catch (_) {}
@@ -662,6 +663,41 @@ function attachVideoControls(container, video) {
   });
   video.addEventListener('play', () => { hasStarted = true; sync(); });
   video.addEventListener('pause', sync);
+  const waiting = value => {
+    frame.classList.toggle('is-buffering', value);
+    if (play && value) { play.textContent = '…'; play.setAttribute('aria-label', '视频加载中'); }
+    else sync();
+  };
+  video.addEventListener('waiting', () => waiting(true));
+  ['playing', 'pause', 'error', 'emptied'].forEach(name => video.addEventListener(name, () => waiting(false)));
+  video.addEventListener('error', () => {
+    const toast = $('.toast');
+    toast.textContent = '视频加载失败，请检查网络后重试';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  });
+  if (useMobileMedia() && video.dataset.src) {
+    const quality = document.createElement('button');
+    quality.type = 'button'; quality.className = 'round-control quality-control';
+    quality.textContent = '高清'; quality.setAttribute('aria-label', '切换到高清画质');
+    quality.setAttribute('aria-pressed', 'false');
+    quality.addEventListener('click', async event => {
+      event.stopPropagation();
+      const hd = video.dataset.quality !== 'hd';
+      const time = video.currentTime || 0;
+      releaseOtherVideos(video);
+      video.dataset.quality = hd ? 'hd' : 'smooth';
+      quality.textContent = hd ? '流畅' : '高清';
+      quality.setAttribute('aria-label', hd ? '切换到流畅画质' : '切换到高清画质');
+      quality.setAttribute('aria-pressed', String(hd));
+      video.preload = 'auto';
+      video.src = hd ? video.dataset.src : video.dataset.mobileSrc;
+      video.load();
+      video.addEventListener('loadedmetadata', () => { if (time < video.duration) video.currentTime = time; }, { once: true });
+      try { await video.play(); } catch (_) {}
+    });
+    frame.append(quality);
+  }
   fullscreen?.addEventListener('click', async event => {
     event.stopPropagation(); ensureLoaded();
     try {
@@ -784,8 +820,10 @@ function bindSoundButton(button) {
     event.stopPropagation();
     const video = document.getElementById(button.dataset.soundTarget || '');
     if (!video) return;
+    releaseOtherVideos(video);
+    video.preload = 'auto';
     if (!video.getAttribute('src') && video.dataset.src) {
-      video.src = useMobileMedia() && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
+      video.src = useMobileMedia() && video.dataset.quality !== 'hd' && video.dataset.mobileSrc ? video.dataset.mobileSrc : video.dataset.src;
       video.load();
     }
     const enable = video.muted;
@@ -806,10 +844,43 @@ function setupLazyVideos() {
     observer.unobserve(video);
   }), { rootMargin: '160px 0px', threshold: 0.01 });
   $$('video[data-poster]').forEach(video => observer.observe(video));
+  // Prepare only one visible video at a time, without autoplaying it.
+  const visible = new Set();
+  const videos = $$('video[data-src]');
+  let timer;
+  const warm = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) visible.add(entry.target);
+      else visible.delete(entry.target);
+    });
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (document.hidden || videos.some(video => !video.paused)) return;
+      const candidate = videos.find(video => visible.has(video));
+      if (!candidate || candidate.hasAttribute('src')) return;
+      releaseOtherVideos(candidate);
+      candidate.preload = 'metadata';
+      candidate.src = candidate.dataset.quality === 'hd' ? candidate.dataset.src : candidate.dataset.mobileSrc || candidate.dataset.src;
+      candidate.load();
+    }, 250);
+  }, { threshold: 0.25 });
+  videos.forEach(video => warm.observe(video));
+}
+
+function releaseOtherVideos(except) {
+  $$('video').forEach(video => {
+    if (video === except) return;
+    video.pause();
+    if (useMobileMedia() && video.hasAttribute('src')) {
+      video.removeAttribute('src');
+      video.preload = 'none';
+      video.load();
+    }
+  });
 }
 
  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-mobile-lazy1').catch(() => {}));
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-startup-hd').catch(() => {}));
 }
 
 init();
