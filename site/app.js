@@ -268,7 +268,13 @@ function useMobileMedia() {
 
 function mobileMediaPath(path) {
   const mobile = path?.replace(/^media\//, 'media/mobile/');
-  return mobile?.endsWith('.mp4') ? `${mobile}?v=half1` : mobile;
+  return mobile?.endsWith('.mp4')
+    ? `https://cdn.jsdmirror.com/gh/brianbrown8477-alt/xu-bangjie-portfolio@0a98176/site/${mobile}?v=half1`
+    : mobile;
+}
+
+function mobileMediaFallback(path) {
+  return path?.replace(/^media\//, 'media/mobile/');
 }
 
 function attachVideoControls(container, video) {
@@ -347,6 +353,7 @@ function createHero(item) {
   video.preload = 'none';
   video.dataset.src = item.src;
   video.dataset.mobileSrc = mobileMediaPath(item.src);
+  video.dataset.fallbackSrc = mobileMediaFallback(item.src);
   video.poster = useMobileMedia() ? mobileMediaPath(item.poster) : item.poster;
   video.loop = true;
   video.muted = true;
@@ -672,6 +679,14 @@ function attachVideoControls(container, video) {
   video.addEventListener('waiting', () => waiting(true));
   ['playing', 'pause', 'error', 'emptied'].forEach(name => video.addEventListener(name, () => waiting(false)));
   video.addEventListener('error', () => {
+    const failedUrl = video.currentSrc || video.src;
+    if (video.dataset.fallbackSrc && failedUrl.startsWith('https://cdn.jsdmirror.com/') && !video.dataset.fallbackTried) {
+      video.dataset.fallbackTried = 'true';
+      video.src = video.dataset.fallbackSrc;
+      video.load();
+      if (!video.paused) video.play().catch(() => {});
+      return;
+    }
     const toast = $('.toast');
     toast.textContent = '视频加载失败，请检查网络后重试';
     toast.classList.add('show');
@@ -701,6 +716,7 @@ function createHero(item) {
   if (mobile) {
     video.dataset.src = item.src;
     video.dataset.mobileSrc = mobileMediaPath(item.src);
+    video.dataset.fallbackSrc = mobileMediaFallback(item.src);
   } else video.src = item.src;
   if (mobile) video.poster = mobileMediaPath(item.poster);
   else video.poster = item.poster;
@@ -722,7 +738,7 @@ function createVideoCard(item, index) {
   const article = document.createElement('article');
   article.className = `video-card ${item.orientation || 'landscape'}`;
   const id = `work-video-${index}`;
-  article.innerHTML = `<div class="video-frame"><video id="${id}" preload="none" muted loop playsinline poster="${useMobileMedia() ? mobileMediaPath(item.poster) : item.poster}" data-src="${item.src}" data-mobile-src="${mobileMediaPath(item.src)}" aria-label="${item.title}"></video>${item.audio ? `<button class="round-control sound-control video-sound-control" type="button" data-sound-target="${id}" aria-label="Toggle sound"><span class="sound-icon">🔇</span><span class="sound-label">Sound</span></button>` : ''}<div class="video-controls"><button class="round-control play-control" type="button" aria-label="Play ${item.title}">▶</button><button class="round-control fullscreen-control" type="button" aria-label="Fullscreen">↗</button></div></div><div class="video-meta"><div><h3>${item.title}</h3><p>${item.type}</p></div><time>${formatDuration(item.duration)}</time></div>`;
+  article.innerHTML = `<div class="video-frame"><video id="${id}" preload="none" muted loop playsinline poster="${useMobileMedia() ? mobileMediaPath(item.poster) : item.poster}" data-src="${item.src}" data-mobile-src="${mobileMediaPath(item.src)}" data-fallback-src="${mobileMediaFallback(item.src)}" aria-label="${item.title}"></video>${item.audio ? `<button class="round-control sound-control video-sound-control" type="button" data-sound-target="${id}" aria-label="Toggle sound"><span class="sound-icon">🔇</span><span class="sound-label">Sound</span></button>` : ''}<div class="video-controls"><button class="round-control play-control" type="button" aria-label="Play ${item.title}">▶</button><button class="round-control fullscreen-control" type="button" aria-label="Fullscreen">↗</button></div></div><div class="video-meta"><div><h3>${item.title}</h3><p>${item.type}</p></div><time>${formatDuration(item.duration)}</time></div>`;
   const video = $('video', article);
   if (useMobileMedia()) {
     video.dataset.poster = mobileMediaPath(item.poster);
@@ -859,7 +875,7 @@ function releaseOtherVideos(except) {
 }
 
  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-half1').catch(() => {}));
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=20261104-cncdn1').catch(() => {}));
 }
 
 init();
